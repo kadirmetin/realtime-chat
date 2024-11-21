@@ -1,12 +1,19 @@
-import Express from "express";
+import dotenv from "dotenv";
+import express from "express";
+import { connectDB } from "./lib/db";
+import { router } from "./routes/router";
 
-const app = Express();
-const port = 3000;
+dotenv.config();
 
-app.get("/", (req, res) => {
-  res.send("Hello World!");
-});
+const app = express();
 
-app.listen(port, () => {
-  return console.log(`Express is listening at http://localhost:${port}`);
+app.use(express.json());
+app.use("/api", router);
+
+const PORT = process.env.PORT;
+
+app.listen(PORT, () => {
+  console.log(`Express is listening at http://localhost:${PORT}`);
+
+  connectDB();
 });
