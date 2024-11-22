@@ -3,7 +3,7 @@ import mongoose, { MongooseError } from "mongoose";
 export const connectDB = async () => {
   try {
     mongoose.set("strictQuery", true);
-    await mongoose.connect(process.env.MONGODB_URI);
+    await mongoose.connect(process.env.MONGODB_URI as string);
 
     console.log(`[DATABASE] MongoDB connected: ${mongoose.connection.host}`);
   } catch (error) {

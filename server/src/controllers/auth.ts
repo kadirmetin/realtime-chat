@@ -1,4 +1,4 @@
-import bcrypt from "bcryptjs";
+import bcrypt from "bcrypt";
 import { Request, Response } from "express";
 import validator from "validator";
 import User from "../models/User";
@@ -22,8 +22,9 @@ const signUp = async (req: Request, res: Response) => {
 
     const isExistingUser = await User.findOne({ email });
 
-    if (isExistingUser)
+    if (isExistingUser) {
       return res.status(400).json({ message: "This email address is in use." });
+    }
 
     if (password.length < 6) {
       return res
@@ -32,7 +33,6 @@ const signUp = async (req: Request, res: Response) => {
     }
 
     const salt = await bcrypt.genSalt(10);
-
     const hashedPassword = await bcrypt.hash(password, salt);
 
     const newUser = new User({
@@ -41,20 +41,15 @@ const signUp = async (req: Request, res: Response) => {
       password: hashedPassword,
     });
 
-    if (newUser) {
-      generateToken(newUser._id, res);
+    await newUser.save();
 
-      await newUser.save();
+    generateToken(newUser._id, res);
 
-      res
-        .status(201)
-        .json({ message: "User created successfully.", _id: newUser._id });
-    } else {
-      res.status(500).json({ message: "Internal server error" });
-    }
+    return res
+      .status(201)
+      .json({ message: "User created successfully.", _id: newUser._id });
   } catch (error) {
     console.error(error);
-
     return res.status(500).json({ message: "Internal server error", error });
   }
 };
@@ -96,13 +91,12 @@ const signIn = async (req: Request, res: Response) => {
 
     generateToken(isExistingUser._id, res);
 
-    res.status(200).json({
+    return res.status(200).json({
       _id: isExistingUser._id,
     });
   } catch (error) {
-    return res
-      .status(500)
-      .json({ message: "An error occurred during the login process." });
+    console.error(error);
+    return res.status(500).json({ message: "Internal server error", error });
   }
 };
 
@@ -115,11 +109,11 @@ const logout = async (req: Request, res: Response) => {
       maxAge: 0,
     });
 
-    res.status(200).json({ message: "Logged out successfuly." });
+    return res.status(200).json({ message: "Logged out successfully." });
   } catch (error) {
-    return res
-      .status(500)
-      .json({ message: "An error occurred during the logout process." });
+    console.error(error);
+
+    return res.status(500).json({ message: "Internal server error", error });
   }
 };
 
