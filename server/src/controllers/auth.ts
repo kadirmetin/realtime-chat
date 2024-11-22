@@ -100,7 +100,7 @@ const signIn = async (req: Request, res: Response) => {
   }
 };
 
-const logout = async (req: Request, res: Response) => {
+const logout = (req: Request, res: Response) => {
   try {
     res.cookie("jwt", "", {
       httpOnly: true,
@@ -117,7 +117,7 @@ const logout = async (req: Request, res: Response) => {
   }
 };
 
-const checkAuth = async (req: Request, res: Response) => {
+const checkAuth = (req: Request, res: Response) => {
   try {
     res.status(200).json(req.body.user);
   } catch (error) {

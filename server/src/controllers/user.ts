@@ -1,34 +1,23 @@
 import { Request, Response } from "express";
-import { cloudinary } from "../lib/cloudinary";
 import User from "../models/User";
 
-const updateUserProfilePic = async (req: Request, res: Response) => {
+const getUsers = async (req: Request, res: Response) => {
   try {
-    const { profilePic } = req.body;
-    const userId = req.body.user._id;
+    const loggedInUserId = req.body.user._id;
 
-    if (!profilePic) {
-      return res.status(400).json({ message: "Profile pic is required" });
-    }
+    if (!loggedInUserId)
+      return res.status(500).json({ message: "Internal server error!" });
 
-    const uploadResponse = await cloudinary.uploader.upload(profilePic, {
-      folder: "realtime-chat",
-    });
+    const filteredUsers = await User.find({
+      _id: { $ne: loggedInUserId },
+    }).select("-password");
 
-    const updatedUser = await User.findByIdAndUpdate(
-      userId,
-      {
-        profilePic: uploadResponse.secure_url,
-      },
-      { new: true }
-    );
-
-    res.status(200).json(updatedUser);
+    return res.status(200).json({ filteredUsers });
   } catch (error) {
     console.error(error);
 
-    return res.status(500).json({ message: "Internal server error", error });
+    return res.status(500).json({ error: "Internal server error!" });
   }
 };
 
-export { updateUserProfilePic };
+export { getUsers };
