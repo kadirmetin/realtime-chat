@@ -117,4 +117,14 @@ const logout = async (req: Request, res: Response) => {
   }
 };
 
-export { logout, signIn, signUp };
+const checkAuth = async (req: Request, res: Response) => {
+  try {
+    res.status(200).json(req.body.user);
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).json({ message: "Internal server error", error });
+  }
+};
+
+export { checkAuth, logout, signIn, signUp };
