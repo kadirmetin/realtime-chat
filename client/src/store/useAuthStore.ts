@@ -12,23 +12,31 @@ type SignUpData = SignInData & {
   name: string;
 };
 
+type AuthUser = {
+  email: string;
+  name: string;
+  profilePic: string;
+  createdAt: string;
+};
+
 type AuthStore = {
-  authUser: object | null;
+  authUser: AuthUser | null;
   isSigningUp: boolean;
   isSigningIn: boolean;
-  isUpdatingProfile: boolean;
+  isUpdatingProfilePic: boolean;
   isCheckingAuth: boolean;
   checkAuth: () => Promise<void>;
   signUp: (data: SignUpData) => Promise<void>;
   signIn: (data: SignInData) => Promise<void>;
   signOut: () => Promise<void>;
+  updateProfilePic: (data: object) => Promise<void>;
 };
 
 export const useAuthStore = create<AuthStore>((set) => ({
   authUser: null,
   isSigningUp: false,
   isSigningIn: false,
-  isUpdatingProfile: false,
+  isUpdatingProfilePic: false,
   isCheckingAuth: true,
 
   checkAuth: async () => {
@@ -97,6 +105,25 @@ export const useAuthStore = create<AuthStore>((set) => ({
       } else {
         toast.error((error as Error).message);
       }
+    }
+  },
+
+  updateProfilePic: async (data: object) => {
+    set({ isUpdatingProfilePic: true });
+    try {
+      const res = await axiosInstance.put("/updateUserProfilePic", data);
+      set({ authUser: res.data });
+      toast.success("Profile updated successfully");
+    } catch (error) {
+      console.error("An error occurred:", error);
+
+      if (axios.isAxiosError(error) && error.response?.data?.message) {
+        toast.error(error.response.data.message);
+      } else {
+        toast.error((error as Error).message);
+      }
+    } finally {
+      set({ isUpdatingProfilePic: false });
     }
   },
 }));

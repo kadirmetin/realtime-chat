@@ -1,5 +1,6 @@
 import {
   Button,
+  Loader,
   Paper,
   PasswordInput,
   Stack,
@@ -8,7 +9,6 @@ import {
   Title,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import { Loader2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuthStore } from "../store/useAuthStore";
 import classes from "./SignPages.module.css";
@@ -75,7 +75,7 @@ const SignInPage = () => {
                     gap: "0.2rem",
                   }}
                 >
-                  <Loader2 className={classes.loader2} />
+                  <Loader color="white" size={"md"} />
                   <span>Loading...</span>
                 </div>
               ) : (

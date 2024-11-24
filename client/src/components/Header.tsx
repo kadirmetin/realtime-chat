@@ -3,6 +3,7 @@ import { useDisclosure } from "@mantine/hooks";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../store/useAuthStore";
 import classes from "./Header.module.css";
+import { ThemeChanger } from "./ThemeChanger";
 
 const Header = () => {
   const [opened, { toggle }] = useDisclosure(false);
@@ -15,12 +16,6 @@ const Header = () => {
           label: "Profile",
           onClick: () => {
             navigate("/profile");
-          },
-        },
-        {
-          label: "Settings",
-          onClick: () => {
-            navigate("/settings");
           },
         },
         {
@@ -52,6 +47,7 @@ const Header = () => {
           <Image h={32} w={32} src={"./logo.svg"} />
         </Link>
         <Group gap={5} visibleFrom="xs">
+          <ThemeChanger />
           {items}
         </Group>
 

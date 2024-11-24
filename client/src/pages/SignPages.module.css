@@ -22,19 +22,3 @@
   color: light-dark(var(--mantine-color-black), var(--mantine-color-white));
   font-family: Greycliff CF, var(--mantine-font-family);
 }
-
-.loader2 {
-  width: 1.5rem;
-  height: 1.5rem;
-
-  animation: spin 5s linear infinite;
-
-  @keyframes spin {
-    from {
-      transform: rotate(0deg);
-    }
-    to {
-      transform: rotate(360deg);
-    }
-  }
-}
