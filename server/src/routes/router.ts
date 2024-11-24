@@ -11,7 +11,7 @@ const router = Router();
 router.post("/signUp", signUp);
 router.post("/signIn", signIn);
 router.post("/logout", logout);
-router.get("/check", protectRoute, checkAuth);
+router.get("/auth/check", protectRoute, checkAuth);
 
 router.put("/updateUserProfilePic", protectRoute, updateUserProfilePic);
 
