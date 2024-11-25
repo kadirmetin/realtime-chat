@@ -5,10 +5,12 @@ import {
   Loader,
   Paper,
   ScrollArea,
+  Switch,
   Text,
+  Tooltip,
 } from "@mantine/core";
 import { Contact } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useAuthStore } from "../store/useAuthStore";
 import { useChatStore } from "../store/useChatStore";
 
@@ -16,6 +18,11 @@ const Sidebar = () => {
   const { getUsers, users, selectedUser, setSelectedUser, isUsersLoading } =
     useChatStore();
   const { onlineUsers } = useAuthStore();
+  const [showOnlineOnly, setShowOnlineOnly] = useState(false);
+
+  const filteredUsers = showOnlineOnly
+    ? users?.filter((user) => onlineUsers.includes(user._id)) || []
+    : users || [];
 
   useEffect(() => {
     getUsers();
@@ -33,16 +40,26 @@ const Sidebar = () => {
   }
 
   return (
-    <>
-      <Flex align="center" w="100%" gap={5} mx={5}>
-        <Contact />
-        <Text size={"lg"}>Users</Text>
+    <Flex display={"flex"} direction={"column"} h={"100%"}>
+      <Flex align={"center"}>
+        <Flex align="center" w="100%" gap={5} mx={5}>
+          <Contact />
+          <Text size={"lg"}>Users</Text>
+        </Flex>
+
+        <Tooltip label="Show onlines only" refProp="rootRef">
+          <Switch
+            color="green"
+            checked={showOnlineOnly}
+            onChange={(e) => setShowOnlineOnly(e.target.checked)}
+          />
+        </Tooltip>
       </Flex>
 
       <Divider size="xs" my="sm" />
-      <ScrollArea>
-        <Flex direction="column" align="center" gap={10}>
-          {users?.map((user) => (
+      <ScrollArea flex={1}>
+        <Flex display={"flex"} direction={"column"} gap={10}>
+          {filteredUsers?.map((user) => (
             <Paper
               withBorder
               w="100%"
@@ -94,9 +111,15 @@ const Sidebar = () => {
               </Flex>
             </Paper>
           ))}
+
+          {filteredUsers.length === 0 && (
+            <Text ta={"center"} c={"dimmed"}>
+              No online users
+            </Text>
+          )}
         </Flex>
       </ScrollArea>
-    </>
+    </Flex>
   );
 };
 

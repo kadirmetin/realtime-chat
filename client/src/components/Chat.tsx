@@ -33,8 +33,6 @@ const Chat = () => {
     }
   }, [messages]);
 
-  console.log("MESSAGES: ", messages);
-
   if (isMessagesLoading)
     return (
       <Flex

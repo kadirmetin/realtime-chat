@@ -38,7 +38,7 @@ type AuthStore = {
   disconnectSocket: () => void;
 };
 
-// const API_URL = import.meta.env.VITE_SOCKET_URL;
+const API_URL = import.meta.env.VITE_SOCKET_URL;
 
 export const useAuthStore = create<AuthStore>((set, get) => ({
   authUser: null,
@@ -150,7 +150,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
     const { authUser } = get();
     if (!authUser || get().socket?.connected) return;
 
-    const socket: Socket = io("http://localhost:3000", {
+    const socket: Socket = io(API_URL, {
       query: {
         userId: authUser._id,
       },

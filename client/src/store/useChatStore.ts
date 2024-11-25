@@ -107,29 +107,12 @@ export const useChatStore = create<ChatStore>((set, get) => ({
 
     const socket = useAuthStore.getState().socket;
 
-    // Önceki dinleyicileri temizle
-    socket?.off("newMessage");
-
-    // Yeni mesaj dinleyicisini ekle
     socket?.on("newMessage", (newMessage: Message) => {
-      const currentMessages = get().messages;
-      // Mesajın zaten var olup olmadığını kontrol et
-      const messageExists = currentMessages.some(
-        (msg) => msg._id === newMessage._id
-      );
-
-      if (!messageExists) {
-        set({
-          messages: [...currentMessages, newMessage],
-        });
-      }
+      if (newMessage.senderId !== selectedUser._id) return;
+      set({
+        messages: [...get().messages, newMessage],
+      });
     });
-
-    // Debug için
-    console.log(
-      "Socket message subscription active for user:",
-      selectedUser._id
-    );
   },
 
   unsubscribeToMessages: () => {

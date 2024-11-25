@@ -53,8 +53,6 @@ const sendMessage = async (req: Request, res: Response) => {
 
     const receiverSocketId = getReceiverSocketId(receiverId);
 
-    console.log("test: ", receiverSocketId);
-
     if (receiverSocketId) {
       io.to(receiverSocketId).emit("newMessage", newMessage);
     }
