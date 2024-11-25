@@ -1,6 +1,6 @@
 import "@mantine/core/styles.css";
 
-import { Flex, Loader } from "@mantine/core";
+import { Flex, Loader, useComputedColorScheme } from "@mantine/core";
 import { useEffect } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import { Slide, ToastContainer } from "react-toastify";
@@ -14,6 +14,7 @@ import { useAuthStore } from "./store/useAuthStore";
 
 export default function App() {
   const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
+  const computedColorScheme = useComputedColorScheme();
 
   useEffect(() => {
     checkAuth();
@@ -63,7 +64,7 @@ export default function App() {
         pauseOnFocusLoss
         draggable
         pauseOnHover
-        theme="light"
+        theme={computedColorScheme}
         transition={Slide}
       />
     </>

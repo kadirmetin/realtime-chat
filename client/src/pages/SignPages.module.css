@@ -1,15 +1,15 @@
 .wrapper {
-  min-height: 900px;
+  height: calc(100vh - 56px);
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
-  background-image: url(https://picsum.photos/2400/800.webp?grayscale);
+  background-image: url(https://picsum.photos/2400/800.webp);
 }
 
 .form {
   border-right: 1px solid
     light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-7));
-  min-height: 900px;
+  height: 100%;
   max-width: 450px;
   padding-top: 80px;
 
