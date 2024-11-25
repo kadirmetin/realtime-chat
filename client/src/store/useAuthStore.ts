@@ -13,6 +13,7 @@ type SignUpData = SignInData & {
 };
 
 type AuthUser = {
+  _id: string;
   email: string;
   name: string;
   profilePic: string;
@@ -25,6 +26,7 @@ type AuthStore = {
   isSigningIn: boolean;
   isUpdatingProfilePic: boolean;
   isCheckingAuth: boolean;
+  onlineUsers: [];
   checkAuth: () => Promise<void>;
   signUp: (data: SignUpData) => Promise<void>;
   signIn: (data: SignInData) => Promise<void>;
@@ -38,6 +40,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
   isSigningIn: false,
   isUpdatingProfilePic: false,
   isCheckingAuth: true,
+  onlineUsers: [],
 
   checkAuth: async () => {
     try {

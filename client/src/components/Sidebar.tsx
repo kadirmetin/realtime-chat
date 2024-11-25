@@ -29,16 +29,9 @@ const Sidebar = () => {
 
   if (isUsersLoading) {
     return (
-      <Flex
-        display={"flex"}
-        direction={"column"}
-        h={"100%"}
-        justify={"center"}
-        align={"center"}
-        gap={5}
-      >
+      <Flex direction="column" h="100%" justify="center" align="center" gap={5}>
         <Loader size="lg" />
-        <Text ta={"center"} size="sm" c={"dimmed"}>
+        <Text ta="center" size="sm" c="dimmed">
           Users loading...
         </Text>
       </Flex>
@@ -47,70 +40,59 @@ const Sidebar = () => {
 
   return (
     <>
-      <Flex display={"flex"} align={"center"} w={"100%"} gap={5} mx={5}>
+      <Flex align="center" w="100%" gap={5} mx={5}>
         <Contact />
-        <Text size={isMobile ? "sm" : "lg"}>Users</Text>{" "}
+        <Text size={isMobile ? "sm" : "lg"}>Users</Text>
       </Flex>
 
-      <Divider size={"xs"} my={"sm"} />
-      <ScrollArea type="auto">
-        <Flex display={"flex"} align={"center"} direction={"column"} gap={10}>
+      <Divider size="xs" my="sm" />
+      <ScrollArea>
+        <Flex direction="column" align="center" gap={10}>
           {users?.map((user) => (
             <Paper
               withBorder
-              w={"100%"}
-              p={"sm"}
+              w="100%"
+              p="sm"
               key={user._id}
-              onClick={() => {
-                setSelectedUser(user._id);
-              }}
+              onClick={() => setSelectedUser(user)}
               style={{
                 cursor: "pointer",
                 userSelect: "none",
-                borderColor: selectedUser === user._id ? "gray" : "none",
+                borderColor:
+                  selectedUser?._id === user._id ? "gray" : undefined,
               }}
             >
-              <Flex display={"flex"} direction={"row"} align={"center"} gap={5}>
-                <Flex pos={"relative"}>
+              <Flex direction="row" align="center" gap={5}>
+                <Flex pos="relative">
                   <Avatar
                     src={user?.profilePic || undefined}
                     size={48}
-                    radius={80}
-                    style={{ display: "block", margin: "0, auto" }}
+                    radius="xl"
                   />
                   <Flex
-                    pos={"absolute"}
+                    pos="absolute"
                     top={0}
                     right={0}
                     w={12}
                     h={12}
-                    bg={"gray"}
+                    bg="gray"
                     style={{
                       borderRadius: "50%",
                       border: "1px solid white",
                     }}
                   />
                 </Flex>
-                {!isMobile && (
+                <Flex direction="column" align="flex-start">
+                  <Text>{user.name}</Text>
                   <Flex
-                    display={"flex"}
-                    direction={"column"}
-                    align={"flex-start"}
+                    direction="row"
+                    align="center"
+                    justify="space-between"
+                    w="100%"
                   >
-                    <Text size={isMobile ? "sm" : "md"}>{user.name}</Text>
-                    <Flex
-                      display={"flex"}
-                      direction={"row"}
-                      align={"center"}
-                      justify={"space-between"}
-                      w={"100%"}
-                    >
-                      <Text c={"dimmed"} size={isMobile ? "xs" : "sm"}>
-                        Offline
-                      </Text>
-                    </Flex>
+                    <Text c="dimmed">Offline</Text>
                   </Flex>
-                )}
+                </Flex>
               </Flex>
             </Paper>
           ))}

@@ -35,7 +35,9 @@ const sendMessage = async (req: Request, res: Response) => {
 
     let imageUrl;
     if (image) {
-      const uploadResponse = await cloudinary.uploader.upload(image);
+      const uploadResponse = await cloudinary.uploader.upload(image, {
+        folder: "realtime-chat",
+      });
       imageUrl = uploadResponse.secure_url;
     }
 
@@ -50,7 +52,7 @@ const sendMessage = async (req: Request, res: Response) => {
 
     // todo: realtime func - socket.io
 
-    res.status(201).json({ newMessage });
+    res.status(201).json(newMessage);
   } catch (error) {
     console.error(error);
 

@@ -4,10 +4,11 @@ import { create } from "zustand";
 import { axiosInstance } from "../lib/axios";
 
 type Message = {
-  id: string;
-  content: string;
+  _id: string;
   senderId: string;
-  timestamp: string;
+  createdAt: Date;
+  text: string;
+  image: string;
 };
 
 type User = {
@@ -18,24 +19,23 @@ type User = {
 };
 
 type ChatStore = {
-  messages: Message[] | null;
+  messages: Message[];
   users: User[] | null;
-  selectedUser: string | null;
+  selectedUser: User | null;
   isUsersLoading: boolean;
   isMessagesLoading: boolean;
-  onlineUsers: [];
   getUsers: () => Promise<void>;
   getMessages: (userId: string) => Promise<void>;
-  setSelectedUser: (selectedUser: string) => void;
+  setSelectedUser: (selectedUser: User | null) => void;
+  sendMessage: (message: Message) => Promise<void>;
 };
 
-export const useChatStore = create<ChatStore>((set) => ({
-  messages: null,
+export const useChatStore = create<ChatStore>((set, get) => ({
+  messages: [],
   users: null,
   selectedUser: null,
   isUsersLoading: false,
   isMessagesLoading: false,
-  onlineUsers: [],
 
   getUsers: async () => {
     set({ isUsersLoading: true });
@@ -63,7 +63,7 @@ export const useChatStore = create<ChatStore>((set) => ({
     try {
       const res = await axiosInstance.get(`/messages/${userId}`);
 
-      set({ messages: res.data });
+      set({ messages: res.data.messages });
     } catch (error) {
       console.error("An error occurred:", error);
 
@@ -77,5 +77,26 @@ export const useChatStore = create<ChatStore>((set) => ({
     }
   },
 
-  setSelectedUser: (selectedUser: string) => set({ selectedUser }),
+  sendMessage: async (message: Message) => {
+    const { selectedUser, messages } = get();
+
+    try {
+      const res = await axiosInstance.post(
+        `/send/${selectedUser?._id}`,
+        message
+      );
+
+      set({ messages: [...messages, res.data] });
+    } catch (error) {
+      console.error("An error occurred:", error);
+
+      if (axios.isAxiosError(error) && error.response?.data?.message) {
+        toast.error(error.response.data.message);
+      } else {
+        toast.error((error as Error).message);
+      }
+    }
+  },
+
+  setSelectedUser: (selectedUser: User | null) => set({ selectedUser }),
 }));
