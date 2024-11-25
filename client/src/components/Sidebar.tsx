@@ -7,21 +7,15 @@ import {
   ScrollArea,
   Text,
 } from "@mantine/core";
-import { useMediaQuery } from "@mantine/hooks";
 import { Contact } from "lucide-react";
 import { useEffect } from "react";
+import { useAuthStore } from "../store/useAuthStore";
 import { useChatStore } from "../store/useChatStore";
 
 const Sidebar = () => {
-  const {
-    getUsers,
-    users,
-    selectedUser,
-    onlineUsers,
-    setSelectedUser,
-    isUsersLoading,
-  } = useChatStore();
-  const isMobile = useMediaQuery("(max-width: 768px)");
+  const { getUsers, users, selectedUser, setSelectedUser, isUsersLoading } =
+    useChatStore();
+  const { onlineUsers } = useAuthStore();
 
   useEffect(() => {
     getUsers();
@@ -42,7 +36,7 @@ const Sidebar = () => {
     <>
       <Flex align="center" w="100%" gap={5} mx={5}>
         <Contact />
-        <Text size={isMobile ? "sm" : "lg"}>Users</Text>
+        <Text size={"lg"}>Users</Text>
       </Flex>
 
       <Divider size="xs" my="sm" />
@@ -75,7 +69,9 @@ const Sidebar = () => {
                     right={0}
                     w={12}
                     h={12}
-                    bg="gray"
+                    bg={
+                      user && onlineUsers.includes(user?._id) ? "green" : "gray"
+                    }
                     style={{
                       borderRadius: "50%",
                       border: "1px solid white",
@@ -90,7 +86,9 @@ const Sidebar = () => {
                     justify="space-between"
                     w="100%"
                   >
-                    <Text c="dimmed">Offline</Text>
+                    <Text c="dimmed">
+                      {onlineUsers.includes(user._id) ? "Online" : "Offline"}
+                    </Text>
                   </Flex>
                 </Flex>
               </Flex>

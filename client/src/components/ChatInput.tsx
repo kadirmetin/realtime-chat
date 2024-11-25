@@ -14,10 +14,11 @@ import { useChatStore } from "../store/useChatStore";
 
 const ChatInput = () => {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+
   const [isModalOpen, setModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
   const { sendMessage } = useChatStore();
-  const fileInputRef = useRef(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const form = useForm({
     initialValues: {
@@ -58,11 +59,17 @@ const ChatInput = () => {
       await sendMessage({
         text: message.trim(),
         image: imagePreview,
+        _id: "",
+        senderId: "",
+        createdAt: undefined,
       });
 
       form.reset();
-      removeImage();
-    } catch (error) {}
+      setImagePreview(null);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    } catch (error) {
+      console.error("An error occurred:", error);
+    }
   };
 
   return (

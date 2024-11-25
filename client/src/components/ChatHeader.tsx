@@ -34,7 +34,9 @@ const ChatHeader = () => {
               w={"100%"}
             >
               <Text c={"dimmed"} size={"sm"}>
-                Offline
+                {selectedUser && onlineUsers.includes(selectedUser._id)
+                  ? "Online"
+                  : "Offline"}
               </Text>
             </Flex>
           </Flex>

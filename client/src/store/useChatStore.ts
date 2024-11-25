@@ -2,13 +2,14 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { create } from "zustand";
 import { axiosInstance } from "../lib/axios";
+import { useAuthStore } from "./useAuthStore";
 
-type Message = {
+export type Message = {
   _id: string;
   senderId: string;
-  createdAt: Date;
+  createdAt: Date | undefined;
   text: string;
-  image: string;
+  image: string | null;
 };
 
 type User = {
@@ -28,6 +29,8 @@ type ChatStore = {
   getMessages: (userId: string) => Promise<void>;
   setSelectedUser: (selectedUser: User | null) => void;
   sendMessage: (message: Message) => Promise<void>;
+  subscribeToMessages: () => void;
+  unsubscribeToMessages: () => void;
 };
 
 export const useChatStore = create<ChatStore>((set, get) => ({
@@ -96,6 +99,43 @@ export const useChatStore = create<ChatStore>((set, get) => ({
         toast.error((error as Error).message);
       }
     }
+  },
+
+  subscribeToMessages: () => {
+    const { selectedUser } = get();
+    if (!selectedUser) return;
+
+    const socket = useAuthStore.getState().socket;
+
+    // Önceki dinleyicileri temizle
+    socket?.off("newMessage");
+
+    // Yeni mesaj dinleyicisini ekle
+    socket?.on("newMessage", (newMessage: Message) => {
+      const currentMessages = get().messages;
+      // Mesajın zaten var olup olmadığını kontrol et
+      const messageExists = currentMessages.some(
+        (msg) => msg._id === newMessage._id
+      );
+
+      if (!messageExists) {
+        set({
+          messages: [...currentMessages, newMessage],
+        });
+      }
+    });
+
+    // Debug için
+    console.log(
+      "Socket message subscription active for user:",
+      selectedUser._id
+    );
+  },
+
+  unsubscribeToMessages: () => {
+    const socket = useAuthStore.getState().socket;
+
+    socket?.off("newMessage");
   },
 
   setSelectedUser: (selectedUser: User | null) => set({ selectedUser }),

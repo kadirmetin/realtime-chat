@@ -1,5 +1,5 @@
 import { Flex, Loader, ScrollArea, Text } from "@mantine/core";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useAuthStore } from "../store/useAuthStore";
 import { useChatStore } from "../store/useChatStore";
 import ChatBubble from "./ChatBubble";
@@ -7,15 +7,33 @@ import ChatHeader from "./ChatHeader";
 import ChatInput from "./ChatInput";
 
 const Chat = () => {
-  const { messages, getMessages, isMessagesLoading, selectedUser } =
-    useChatStore();
+  const {
+    messages,
+    getMessages,
+    isMessagesLoading,
+    selectedUser,
+    subscribeToMessages,
+    unsubscribeToMessages,
+  } = useChatStore();
   const { authUser } = useAuthStore();
+  const messageEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!selectedUser) return;
+    getMessages(selectedUser?._id);
 
-    getMessages(selectedUser._id);
-  }, [selectedUser]);
+    subscribeToMessages();
+
+    return () => unsubscribeToMessages();
+  }, [selectedUser, getMessages, subscribeToMessages, unsubscribeToMessages]);
+
+  useEffect(() => {
+    if (messageEndRef.current && messages) {
+      messageEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages]);
+
+  console.log("MESSAGES: ", messages);
 
   if (isMessagesLoading)
     return (
@@ -48,18 +66,20 @@ const Chat = () => {
           const isOwnMessage = message.senderId === authUser?._id;
 
           return (
-            <ChatBubble
-              key={message._id}
-              avatarUrl={
-                isOwnMessage
-                  ? authUser.profilePic || undefined
-                  : selectedUser?.profilePic || null
-              }
-              imageUrl={message?.image || undefined}
-              message={message.text}
-              isOwnMessage={isOwnMessage}
-              timestamp={message.createdAt}
-            />
+            <div key={message._id}>
+              <ChatBubble
+                avatarUrl={
+                  isOwnMessage
+                    ? authUser.profilePic || ""
+                    : selectedUser?.profilePic || ""
+                }
+                imageUrl={message?.image || undefined}
+                message={message.text}
+                isOwnMessage={isOwnMessage}
+                timestamp={message.createdAt}
+              />
+              <div ref={messageEndRef}></div>
+            </div>
           );
         })}
       </ScrollArea>

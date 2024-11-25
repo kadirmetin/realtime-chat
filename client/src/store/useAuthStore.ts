@@ -1,5 +1,6 @@
 import axios from "axios";
 import { toast } from "react-toastify";
+import { io, Socket } from "socket.io-client";
 import { create } from "zustand";
 import { axiosInstance } from "../lib/axios";
 
@@ -26,27 +27,34 @@ type AuthStore = {
   isSigningIn: boolean;
   isUpdatingProfilePic: boolean;
   isCheckingAuth: boolean;
+  socket?: Socket;
   onlineUsers: [];
   checkAuth: () => Promise<void>;
   signUp: (data: SignUpData) => Promise<void>;
   signIn: (data: SignInData) => Promise<void>;
   signOut: () => Promise<void>;
   updateProfilePic: (data: object) => Promise<void>;
+  connectSocket: () => void;
+  disconnectSocket: () => void;
 };
 
-export const useAuthStore = create<AuthStore>((set) => ({
+// const API_URL = import.meta.env.VITE_SOCKET_URL;
+
+export const useAuthStore = create<AuthStore>((set, get) => ({
   authUser: null,
   isSigningUp: false,
   isSigningIn: false,
   isUpdatingProfilePic: false,
   isCheckingAuth: true,
   onlineUsers: [],
+  socket: undefined,
 
   checkAuth: async () => {
     try {
       const res = await axiosInstance.get("/auth/check");
 
       set({ authUser: res.data });
+      get().connectSocket();
     } catch (error) {
       console.error("Error in checkAuth:", error);
 
@@ -56,12 +64,16 @@ export const useAuthStore = create<AuthStore>((set) => ({
     }
   },
 
-  signUp: async (data: Object) => {
+  signUp: async (data: object) => {
     set({ isSigningUp: true });
     try {
       const res = await axiosInstance.post("/signup", data);
+
       set({ authUser: res.data });
+
       toast.success("Account created successfully");
+
+      get().connectSocket();
     } catch (error) {
       console.error("An error occurred:", error);
 
@@ -75,12 +87,14 @@ export const useAuthStore = create<AuthStore>((set) => ({
     }
   },
 
-  signIn: async (data: Object) => {
+  signIn: async (data: object) => {
     set({ isSigningIn: true });
     try {
       const res = await axiosInstance.post("/signIn", data);
       set({ authUser: res.data });
       toast.success("Logged in successfully");
+
+      get().connectSocket();
     } catch (error) {
       console.error("An error occurred:", error);
 
@@ -100,6 +114,8 @@ export const useAuthStore = create<AuthStore>((set) => ({
       set({ authUser: null });
 
       toast.success("Logged out successfully");
+
+      get().disconnectSocket();
     } catch (error) {
       console.error("An error occurred:", error);
 
@@ -128,5 +144,26 @@ export const useAuthStore = create<AuthStore>((set) => ({
     } finally {
       set({ isUpdatingProfilePic: false });
     }
+  },
+
+  connectSocket: () => {
+    const { authUser } = get();
+    if (!authUser || get().socket?.connected) return;
+
+    const socket: Socket = io("http://localhost:3000", {
+      query: {
+        userId: authUser._id,
+      },
+    });
+    socket.connect();
+
+    set({ socket: socket });
+
+    socket.on("getOnlineUsers", (userIds) => {
+      set({ onlineUsers: userIds });
+    });
+  },
+  disconnectSocket: () => {
+    if (get().socket?.connected) get().socket?.disconnect();
   },
 }));
