@@ -1,12 +1,28 @@
-import Express from "express";
+import cookieParser from "cookie-parser";
+import cors from "cors";
+import dotenv from "dotenv";
+import express from "express";
+import { connectDB } from "./lib/db";
+import { app, server } from "./lib/socket";
+import { router } from "./routes/router";
 
-const app = Express();
-const port = 3000;
+dotenv.config();
 
-app.get("/", (req, res) => {
-  res.send("Hello World!");
-});
+app.use(express.json({ limit: "50mb" }));
+app.use(express.urlencoded({ limit: "50mb", extended: true }));
+app.use(cookieParser());
+app.use(
+  cors({
+    origin: process.env.ORIGIN_URL,
+    credentials: true,
+  })
+);
+app.use("/api", router);
 
-app.listen(port, () => {
-  return console.log(`Express is listening at http://localhost:${port}`);
+const PORT = process.env.PORT;
+
+server.listen(PORT, () => {
+  console.log(`Express is listening at http://localhost:${PORT}`);
+
+  connectDB();
 });
