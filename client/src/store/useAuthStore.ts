@@ -28,7 +28,7 @@ type AuthStore = {
   isUpdatingProfilePic: boolean;
   isCheckingAuth: boolean;
   socket?: Socket;
-  onlineUsers: [];
+  onlineUsers: string[];
   checkAuth: () => Promise<void>;
   signUp: (data: SignUpData) => Promise<void>;
   signIn: (data: SignInData) => Promise<void>;

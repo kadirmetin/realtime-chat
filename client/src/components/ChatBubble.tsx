@@ -6,7 +6,7 @@ interface ChatBubbleProps {
   imageUrl?: string;
   avatarUrl: string;
   isOwnMessage: boolean;
-  timestamp: Date;
+  timestamp: Date | undefined;
 }
 
 const ChatBubble = ({
