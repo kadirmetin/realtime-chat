@@ -8,13 +8,9 @@ npm-debug.log*
 
 # Dependency directories
 pids
-logs
 *.pid
 *.seed
 *.pid.lock
-
-# Optional npm cache directory
-.npm
 
 # Optional eslint cache
 .eslintcache
@@ -27,3 +23,19 @@ logs
 
 # Builds
 dist/
+
+# Logs
+pnpm-debug.log*
+
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

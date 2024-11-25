@@ -2,9 +2,12 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
+import path from "path";
 import { connectDB } from "./lib/db";
 import { app, server } from "./lib/socket";
 import { router } from "./routes/router";
+
+const __dirname = path.resolve();
 
 dotenv.config();
 
@@ -20,6 +23,14 @@ app.use(
 app.use("/api", router);
 
 const PORT = process.env.PORT;
+
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static(path.join(__dirname, "../client/dist")));
+
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "../client", "dist", "index.html"));
+  });
+}
 
 server.listen(PORT, () => {
   console.log(`Express is listening at http://localhost:${PORT}`);
