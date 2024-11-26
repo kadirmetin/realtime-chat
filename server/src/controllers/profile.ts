@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import { cloudinary } from "../lib/cloudinary";
-import User from "../models/User";
+import { cloudinary } from "../lib/cloudinary.js";
+import User from "../models/User.js";
 
 const updateUserProfilePic = async (req: Request, res: Response) => {
   try {

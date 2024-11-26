@@ -1,6 +1,10 @@
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
-import User from "../models/User";
+import User from "../models/User.js";
+
+interface JwtPayloadCustom extends jwt.JwtPayload {
+  userId: string;
+}
 
 const protectRoute = async (
   req: Request,
@@ -16,9 +20,12 @@ const protectRoute = async (
         .json({ message: "Unauthorized - No token provided!" });
     }
 
-    let decoded;
+    let decoded: JwtPayloadCustom;
     try {
-      decoded = jwt.verify(token, process.env.JWT_SECRET as string);
+      decoded = jwt.verify(
+        token,
+        process.env.JWT_SECRET as string
+      ) as JwtPayloadCustom;
     } catch (err) {
       return res
         .status(401)

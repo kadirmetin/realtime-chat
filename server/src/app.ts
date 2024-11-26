@@ -3,9 +3,9 @@ import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
 import path from "path";
-import { connectDB } from "./lib/db";
-import { app, server } from "./lib/socket";
-import { router } from "./routes/router";
+import connectDB from "./lib/db.js";
+import { app, server } from "./lib/socket.js";
+import { router } from "./routes/router.js";
 
 const __dirname = path.resolve();
 

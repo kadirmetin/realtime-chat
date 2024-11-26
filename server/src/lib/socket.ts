@@ -9,7 +9,7 @@ dotenv.config();
 
 const io = new Server(server, {
   cors: {
-    origin: [process.env.ORIGIN_URL],
+    origin: [process.env.ORIGIN_URL as string],
   },
 });
 
@@ -17,7 +17,7 @@ export const getReceiverSocketId = (userId: string) => {
   return userSocketMap[userId];
 };
 
-const userSocketMap = {};
+const userSocketMap: Record<string, string> = {};
 
 io.on("connection", (socket) => {
   console.log("A user connected", socket.id);

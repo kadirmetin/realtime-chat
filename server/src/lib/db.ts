@@ -1,6 +1,6 @@
 import mongoose, { MongooseError } from "mongoose";
 
-export const connectDB = async () => {
+const connectDB = async () => {
   try {
     mongoose.set("strictQuery", true);
     await mongoose.connect(process.env.MONGODB_URI as string);
